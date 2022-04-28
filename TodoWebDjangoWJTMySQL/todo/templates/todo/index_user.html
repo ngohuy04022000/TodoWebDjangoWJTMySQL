@@ -1,0 +1,26 @@
+<!-- todo_list/todo_app/templates/todo_app/index.html -->
+
+{% extends "base.html" %}
+{% block content %}
+<!--index.html-->
+{% if object_list %}
+    <div
+        role="button"
+        onclick="location.href=
+        '{% url "logout" %}'">
+        Đăng xuất
+    </div>
+<h3>Danh sách thành viên</h3>
+
+{% endif %}
+<ul>
+    {% for user in object_list %}
+    <li>
+        {{ user.username  }}
+    </li>
+    {% empty %}
+    <h5> Không có thành viên nào</h5>
+    {% endfor %}
+</ul>
+
+{% endblock %}

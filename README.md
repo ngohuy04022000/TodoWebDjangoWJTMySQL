@@ -4,6 +4,8 @@
    - pip install Django==4.0.4
    - pip install djangorestframework
    - pip install djangorestframework_simplejwt
+  + Thực thi lệnh để chạy server:
+   - python manage.py runserver
 + Port để test ứng dụng:
   - http://127.0.0.1:8000/signin/
 + Cách kết nối database ở local PC

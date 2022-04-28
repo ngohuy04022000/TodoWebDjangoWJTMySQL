@@ -1,7 +1,8 @@
+from enum import auto
 from django import forms
 import re
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from .models import UserList
 
 class RegistrationForm(forms.Form):
     username = forms.CharField(label='Tài khoản', max_length=30)
@@ -29,3 +30,4 @@ class RegistrationForm(forms.Form):
 
     def save(self):
         User.objects.create_user(username=self.cleaned_data['username'], email=self.cleaned_data['email'], password=self.cleaned_data['password1'])
+        # UserList.objects.create(id = , name = self.cleaned_data['username'])

@@ -5,7 +5,7 @@
 <div>
     <div>
         <div>
-            <h3>Edit list:</h3>
+            <h3>Chỉnh sửa danh sách công việc: <i>{{ todo_list.title }}</i> </h3>
             <h5>{{ todo_list.task | upper }}</h5>
         </div>
         <ul>
@@ -17,27 +17,27 @@
                         onclick="location.href=
                         '{% url "item-update" todo_list.id todo.id %}'">
                         {{ todo.title }}
-                        (Due {{ todo.due_date | date:"l, F j" }})
+                        (ID: {{todo.id}}, Công việc: {{todo.task}}, Đến: {{ todo.due_date | date:"l, F j" }})
                     </div>
                 </div>
             </li>
             {% empty %}
-            <p>There are no to-do items in this list.</p>
+            <p>Không có công việc nào trong danh sách này.</p>
             {% endfor %}
         </ul>
         <p>
             <input
-                value="Add a new item"
+                value="Thêm công việc"
                 type="button"
                 onclick="location.href=
                 '{% url "item-add" todo_list.id %}'" />
             <input
-                value="Delete this list"
+                value="Xóa bỏ danh sách"
                 type="button"
                 onclick="location.href=
                 '{% url "list-delete" todo_list.id %}'" />
             <input
-                value="Return all list"
+                value="Trở lại màn hình chính"
                 type="button"
                 onclick="location.href=
                 '{% url "index" %}'" />    

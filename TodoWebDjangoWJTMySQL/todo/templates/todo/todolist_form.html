@@ -10,10 +10,10 @@
             {% csrf_token %}
             {{ form.as_p }}
             <input
-                value="Save"
+                value="Lưu"
                 type="submit">
             <input
-                value="Cancel"
+                value="Hủy bỏ"
                 type="button"
                 onclick="location.href='{% url "index" %}';">
         </form>

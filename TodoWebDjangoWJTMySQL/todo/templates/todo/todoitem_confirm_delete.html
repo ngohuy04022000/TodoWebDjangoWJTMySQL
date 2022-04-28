@@ -3,18 +3,18 @@
 
 {% block content %}
 
-<h3>Delete To-do Item</h3>
+<h3>Xóa công việc</h3>
 
-<p>Are you sure you want to delete the item: <b>{{ object.title }}</b>
-   from the list <i>{{ todo_list.title }}</i>?</p>
+<p>Bạn có muốn xóa công việc: <b>{{ object.title }}</b>
+   của danh sách <i>{{ todo_list.title }}</i>?</p>
 
 <form method="POST">
     {% csrf_token %}
     <input
-        value="Yes, delete."
+        value="Vâng, hãy xóa nó."
         type="submit">
     <input
-        value="Cancel"
+        value="Hủy bỏ"
         type="button"
         onclick="location.href='{% url "list" todo_list.id %}';">
 </form>

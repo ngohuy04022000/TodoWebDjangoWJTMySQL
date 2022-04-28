@@ -4,7 +4,21 @@
 {% block content %}
 <!--index.html-->
 {% if object_list %}
-<h3>Thêm Danh Sách To-do</h3>
+    <div
+        role="button"
+        onclick="location.href=
+        '{% url "logout" %}'">
+        {{ todo.title }}
+        Đăng xuất {{ todo.due_date | date:"l, F j" }}
+    </div>
+<h3>Thêm danh sách công việc</h3>
+    <div
+        role="button"
+        onclick="location.href='{% url "list-add" %}'">
+        {{ todo.title }}
+        Thêm danh sách mới {{ todo.due_date | date:"l, F j" }}
+    </div>
+
 {% endif %}
 <ul>
     {% for todolist in object_list %}
@@ -14,21 +28,14 @@
             onclick="location.href='{% url "list" todolist.id %}'">
             {{ todolist.title }}
         </div>
-        <h4>Tùy chọn</h4>
-        <div
-            role="button"
-            onclick="location.href='{% url "list-add" %}'">
-        {{ todo.title }}
-        Add new list {{ todo.due_date | date:"l, F j" }}
-        </div>
     </li>
     {% empty %}
-    <h5>You have no lists!
+    <h5> Bạn không có công việc cần làm
         <div
             role="button"
             onclick="location.href='{% url "list-add" %}'">
             {{ todo.title }}
-            Add new list {{ todo.due_date | date:"l, F j" }}
+            Thêm danh sách {{ todo.due_date | date:"l, F j" }}
         </div>
     </h5>
     {% endfor %}

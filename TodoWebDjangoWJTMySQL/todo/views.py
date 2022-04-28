@@ -7,7 +7,8 @@ from django.views.generic import (
     DeleteView,
 )
 
-from .models import ToDoItem, ToDoList
+from .models import ToDoItem, ToDoList, UserList
+from django.contrib.auth.models import User
 
 from .signform import RegistrationForm
 from django.http import HttpResponseRedirect 
@@ -22,7 +23,11 @@ def Register(request):
             return HttpResponseRedirect('/')
     return render(request, 'pages/register.html', {'form': form})
 
-# ToDoItem: id, task, description, user_id, completion_date, status, created_date, due_date, todo_list
+# ToDoItem: id, task, description, user_id, modification_date, status, created_date, due_date, todo_list
+
+class ListUserView(ListView):
+    model = User
+    template_name = "todo/index_user.html"
 
 class ListListView(ListView):
     model = ToDoList
@@ -53,9 +58,9 @@ class ItemCreate(CreateView):
     model = ToDoItem
     fields = [
         "todo_list",
+        "id",
         "task",
         "description",
-        "completion_date",
         "status",
         "created_date",
         "due_date",
@@ -81,11 +86,11 @@ class ItemUpdate(UpdateView):
     model = ToDoItem
     fields = [
         "todo_list",
+        "id",
         "task",
         "description",
-        "completion_date",
+        "modification_date",
         "status",
-        "created_date",
         "due_date",
     ]
 
