@@ -1,0 +1,37 @@
+<!-- todo_list/todo_app/templates/todo_app/index.html -->
+
+{% extends "base.html" %}
+{% block content %}
+<!--index.html-->
+{% if object_list %}
+<h3>Thêm Danh Sách To-do</h3>
+{% endif %}
+<ul>
+    {% for todolist in object_list %}
+    <li>
+        <div
+            role="button"
+            onclick="location.href='{% url "list" todolist.id %}'">
+            {{ todolist.title }}
+        </div>
+        <h4>Tùy chọn</h4>
+        <div
+            role="button"
+            onclick="location.href='{% url "list-add" %}'">
+        {{ todo.title }}
+        Add new list {{ todo.due_date | date:"l, F j" }}
+        </div>
+    </li>
+    {% empty %}
+    <h5>You have no lists!
+        <div
+            role="button"
+            onclick="location.href='{% url "list-add" %}'">
+            {{ todo.title }}
+            Add new list {{ todo.due_date | date:"l, F j" }}
+        </div>
+    </h5>
+    {% endfor %}
+</ul>
+
+{% endblock %}
