@@ -1,5 +1,7 @@
 # Django Todo App — JWT Authentication & MySQL
 
+[![Tests](https://github.com/ngohuy04022000/EntranceTest-Python/actions/workflows/tests.yml/badge.svg)](https://github.com/ngohuy04022000/EntranceTest-Python/actions/workflows/tests.yml)
+
 A task management (to-do) web application built with **Django 4**, **Django REST Framework**, and **JWT authentication** (SimpleJWT), using **MySQL** as the database.
 
 ## Features
@@ -52,6 +54,15 @@ postman/                     # API test screenshots
    python manage.py runserver
    ```
 4. Open: http://127.0.0.1:8000/signin/
+
+## Running tests
+
+```bash
+cd todo_project
+DB_ENGINE=sqlite python manage.py test
+```
+
+Setting `DB_ENGINE=sqlite` lets the tests run without a MySQL server. GitHub Actions runs the suite on every push against both SQLite and MySQL 8.
 
 ## Main endpoints
 
