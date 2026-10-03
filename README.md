@@ -1,6 +1,6 @@
 # Django Todo App — JWT Authentication & MySQL
 
-[![Tests](https://github.com/ngohuy04022000/EntranceTest-Python/actions/workflows/tests.yml/badge.svg)](https://github.com/ngohuy04022000/EntranceTest-Python/actions/workflows/tests.yml)
+[![Tests](https://github.com/ngohuy04022000/django-todo-jwt-api/actions/workflows/tests.yml/badge.svg)](https://github.com/ngohuy04022000/django-todo-jwt-api/actions/workflows/tests.yml)
 
 A task management (to-do) web application built with **Django 4**, **Django REST Framework**, and **JWT authentication** (SimpleJWT), using **MySQL** as the database.
 
