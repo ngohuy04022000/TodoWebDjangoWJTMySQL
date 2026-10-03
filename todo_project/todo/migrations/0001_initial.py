@@ -3,7 +3,7 @@
 import datetime
 from django.db import migrations, models
 import django.db.models.deletion
-from django.utils.timezone import utc
+from datetime import timezone
 
 
 class Migration(migrations.Migration):
@@ -28,9 +28,9 @@ class Migration(migrations.Migration):
                 ('id', models.CharField(max_length=5, primary_key=True, serialize=False)),
                 ('task', models.CharField(max_length=30)),
                 ('description', models.TextField(blank=True, null=True)),
-                ('due_date', models.DateTimeField(default=datetime.datetime(2022, 5, 5, 8, 53, 45, 744058, tzinfo=utc))),
-                ('created_date', models.DateTimeField(default=datetime.datetime(2022, 4, 28, 8, 53, 45, 745055, tzinfo=utc))),
-                ('modification_date', models.DateTimeField(default=datetime.datetime(2022, 4, 28, 8, 53, 45, 745055, tzinfo=utc))),
+                ('due_date', models.DateTimeField(default=datetime.datetime(2022, 5, 5, 8, 53, 45, 744058, tzinfo=timezone.utc))),
+                ('created_date', models.DateTimeField(default=datetime.datetime(2022, 4, 28, 8, 53, 45, 745055, tzinfo=timezone.utc))),
+                ('modification_date', models.DateTimeField(default=datetime.datetime(2022, 4, 28, 8, 53, 45, 745055, tzinfo=timezone.utc))),
                 ('todo_list', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='todo.todolist')),
             ],
             options={

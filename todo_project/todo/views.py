@@ -1,127 +1,113 @@
 from django.contrib.auth import login
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from django.urls import reverse, reverse_lazy
-
-from django.views.generic import (
-    ListView,
-    CreateView,
-    UpdateView,
-    DeleteView,
-)
-
-from .models import ToDoItem, ToDoList
 from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404, redirect, render
+from django.urls import reverse, reverse_lazy
+from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
-from .signform import RegistrationForm
-from django.http import HttpResponseRedirect 
-from django.shortcuts import render
+from .forms import RegistrationForm, ToDoItemForm, ToDoListForm
+from .models import ToDoItem, ToDoList
 
-def Register(request):
-    form = RegistrationForm()
-    if request.method == 'POST':
-        form = RegistrationForm(request.POST)
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return HttpResponseRedirect('/')
-    return render(request, 'pages/register.html', {'form': form})
 
-# ToDoItem: id, task, description, user_id, modification_date, status, created_date, due_date, todo_list
+def register(request):
+    if request.user.is_authenticated:
+        return redirect("index")
+    form = RegistrationForm(request.POST or None)
+    if request.method == "POST" and form.is_valid():
+        user = form.save()
+        login(request, user)
+        return redirect("index")
+    return render(request, "pages/register.html", {"form": form})
+
 
 class ListUserView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = User
     template_name = "todo/index_user.html"
+    ordering = ["username"]
 
     def test_func(self):
         return self.request.user.is_staff
 
-class ListListView(LoginRequiredMixin, ListView):
-    model = ToDoList
-    template_name = "todo/index.html"
 
-class ItemListView(LoginRequiredMixin, ListView):
-    model = ToDoItem
-    template_name = "todo/todo_list.html"
+class OwnedListMixin(LoginRequiredMixin):
+    """Resolves the list from the URL, restricted to lists owned by the current user."""
 
-    def get_queryset(self):
-        return ToDoItem.objects.filter(todo_list_id=self.kwargs["list_id"])
-
-    def get_context_data(self):
-        context = super().get_context_data()
-        context["todo_list"] = ToDoList.objects.get(id=self.kwargs["list_id"])
-        return context
-
-class ListCreate(LoginRequiredMixin, CreateView):
-    model = ToDoList
-    fields = ["title"]
-
-    def get_context_data(self):
-        context = super(ListCreate, self).get_context_data()
-        context["task"] = "Add a new list"
-        return context
-
-class ItemCreate(LoginRequiredMixin, CreateView):
-    model = ToDoItem
-    fields = [
-        "todo_list",
-        "id",
-        "task",
-        "description",
-        "status",
-        "created_date",
-        "due_date",
-    ]
-
-    def get_initial(self):
-        initial_data = super(ItemCreate, self).get_initial()
-        todo_list = ToDoList.objects.get(id=self.kwargs["list_id"])
-        initial_data["todo_list"] = todo_list
-        return initial_data
-
-    def get_context_data(self):
-        context = super(ItemCreate, self).get_context_data()
-        todo_list = ToDoList.objects.get(id=self.kwargs["list_id"])
-        context["todo_list"] = todo_list
-        context["task"] = "Create a new item"
-        return context
-
-    def get_success_url(self):
-        return reverse("list", args=[self.object.todo_list_id])
-
-class ItemUpdate(LoginRequiredMixin, UpdateView):
-    model = ToDoItem
-    fields = [
-        "todo_list",
-        "id",
-        "task",
-        "description",
-        "modification_date",
-        "status",
-        "due_date",
-    ]
-
-    def get_context_data(self):
-        context = super(ItemUpdate, self).get_context_data()
-        context["todo_list"] = self.object.todo_list
-        context["task"] = "Edit item"
-        return context
-
-    def get_success_url(self):
-        return reverse("list", args=[self.object.todo_list_id])
-
-class ListDelete(LoginRequiredMixin, DeleteView):
-    model = ToDoList
-    # You have to use reverse_lazy() instead of reverse(),
-    # as the urls are not loaded when the file is imported.
-    success_url = reverse_lazy("index")
-
-class ItemDelete(LoginRequiredMixin, DeleteView):
-    model = ToDoItem
-
-    def get_success_url(self):
-        return reverse_lazy("list", args=[self.kwargs["list_id"]])
+    def get_todo_list(self):
+        if not hasattr(self, "_todo_list"):
+            self._todo_list = get_object_or_404(
+                ToDoList, id=self.kwargs["list_id"], owner=self.request.user
+            )
+        return self._todo_list
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["todo_list"] = self.object.todo_list
+        context["todo_list"] = self.get_todo_list()
         return context
+
+
+class ListListView(LoginRequiredMixin, ListView):
+    template_name = "todo/index.html"
+
+    def get_queryset(self):
+        return ToDoList.objects.filter(owner=self.request.user)
+
+
+class ListCreate(LoginRequiredMixin, CreateView):
+    model = ToDoList
+    form_class = ToDoListForm
+    extra_context = {"title": "Thêm danh sách mới"}
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["instance"] = ToDoList(owner=self.request.user)
+        return kwargs
+
+
+class ListDelete(LoginRequiredMixin, DeleteView):
+    model = ToDoList
+    success_url = reverse_lazy("index")
+
+    def get_queryset(self):
+        return ToDoList.objects.filter(owner=self.request.user)
+
+
+class ItemListView(OwnedListMixin, ListView):
+    template_name = "todo/todo_list.html"
+
+    def get_queryset(self):
+        return self.get_todo_list().items.all()
+
+
+class ItemCreate(OwnedListMixin, CreateView):
+    model = ToDoItem
+    form_class = ToDoItemForm
+    extra_context = {"title": "Thêm công việc mới"}
+
+    def form_valid(self, form):
+        form.instance.todo_list = self.get_todo_list()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse("list", args=[self.object.todo_list_id])
+
+
+class ItemUpdate(OwnedListMixin, UpdateView):
+    model = ToDoItem
+    form_class = ToDoItemForm
+    extra_context = {"title": "Chỉnh sửa công việc"}
+
+    def get_queryset(self):
+        return self.get_todo_list().items.all()
+
+    def get_success_url(self):
+        return reverse("list", args=[self.object.todo_list_id])
+
+
+class ItemDelete(OwnedListMixin, DeleteView):
+    model = ToDoItem
+
+    def get_queryset(self):
+        return self.get_todo_list().items.all()
+
+    def get_success_url(self):
+        return reverse("list", args=[self.object.todo_list_id])

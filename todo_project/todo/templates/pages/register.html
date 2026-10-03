@@ -1,18 +1,13 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Document</title>
-</head>
-<body>
-    <center>
-        <form action="." method="POST">
-            {% csrf_token %}
-            {{form.as_p}}
-            <input type="submit" value="Đăng ký"/>
-        </form>
-    </center>
-</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %}Đăng ký{% endblock %}
+
+{% block content %}
+<h3>Đăng ký tài khoản</h3>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Đăng ký</button>
+    <a class="button" href="{% url 'login' %}">Đã có tài khoản? Đăng nhập</a>
+</form>
+{% endblock %}

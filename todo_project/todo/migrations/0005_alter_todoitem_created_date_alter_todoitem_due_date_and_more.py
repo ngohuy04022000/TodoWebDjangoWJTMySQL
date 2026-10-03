@@ -2,7 +2,7 @@
 
 import datetime
 from django.db import migrations, models
-from django.utils.timezone import utc
+from datetime import timezone
 
 
 class Migration(migrations.Migration):
@@ -15,16 +15,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='todoitem',
             name='created_date',
-            field=models.DateTimeField(default=datetime.datetime(2022, 4, 28, 9, 20, 9, 205695, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(2022, 4, 28, 9, 20, 9, 205695, tzinfo=timezone.utc)),
         ),
         migrations.AlterField(
             model_name='todoitem',
             name='due_date',
-            field=models.DateTimeField(default=datetime.datetime(2022, 5, 5, 9, 20, 9, 205695, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(2022, 5, 5, 9, 20, 9, 205695, tzinfo=timezone.utc)),
         ),
         migrations.AlterField(
             model_name='todoitem',
             name='modification_date',
-            field=models.DateTimeField(default=datetime.datetime(2022, 4, 28, 9, 20, 9, 205695, tzinfo=utc)),
+            field=models.DateTimeField(default=datetime.datetime(2022, 4, 28, 9, 20, 9, 205695, tzinfo=timezone.utc)),
         ),
     ]

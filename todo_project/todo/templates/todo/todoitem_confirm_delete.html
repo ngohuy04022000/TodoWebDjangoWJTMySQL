@@ -1,22 +1,11 @@
-<!-- todo_list/todo_app/templates/todo_app/todoitem_confirm_delete.html -->
 {% extends "base.html" %}
 
 {% block content %}
-
 <h3>Xóa công việc</h3>
-
-<p>Bạn có muốn xóa công việc: <b>{{ object.title }}</b>
-   của danh sách <i>{{ todo_list.title }}</i>?</p>
-
-<form method="POST">
+<p>Bạn có muốn xóa công việc <b>{{ object.task }}</b> của danh sách <i>{{ todo_list.title }}</i>?</p>
+<form method="post">
     {% csrf_token %}
-    <input
-        value="Vâng, hãy xóa nó."
-        type="submit">
-    <input
-        value="Hủy bỏ"
-        type="button"
-        onclick="location.href='{% url "list" todo_list.id %}';">
+    <button type="submit">Vâng, hãy xóa nó</button>
+    <a class="button" href="{% url 'list' todo_list.id %}">Hủy bỏ</a>
 </form>
-
 {% endblock %}

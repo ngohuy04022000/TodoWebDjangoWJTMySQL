@@ -1,28 +1,15 @@
-<!-- todo_list/todo_app/templates/todo_app/todoitem_form.html -->
 {% extends "base.html" %}
 
 {% block content %}
-
 <h3>{{ title }}</h3>
+<p>Danh sách: <i>{{ todo_list.title }}</i></p>
 <form method="post">
     {% csrf_token %}
-    <table>
-        {{ form.as_table }}
-    </table>
-    <input
-        value="Lưu"
-        type="submit">
-    <input
-        value="Hủy bỏ"
-        type="button"
-        onclick="location.href='{% url "list" todo_list.id %}'">
+    {{ form.as_p }}
+    <button type="submit">Lưu</button>
+    <a class="button" href="{% url 'list' todo_list.id %}">Hủy bỏ</a>
     {% if object %}
-        <input
-            value="Xóa công việc này"
-            type="button"
-            onclick="location.href=
-            '{% url "item-delete" todo_list.id object.id %}'">
+    <a class="button" href="{% url 'item-delete' todo_list.id object.id %}">Xóa công việc này</a>
     {% endif %}
 </form>
-
 {% endblock %}

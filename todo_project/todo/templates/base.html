@@ -1,28 +1,30 @@
-<!-- todo_list/todo_app/templates/base.html -->
-<!-- Base template -->
 <!doctype html>
-<html lang="en">
+<html lang="vi">
 
 <head>
-    <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!--Simple.css-->
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
-    <title>Quản lý danh sách các công việc cần làm</title>
+    <title>{% block title %}Quản lý danh sách các công việc cần làm{% endblock %}</title>
 </head>
 
 <body>
-    <div>
-        <h1 onclick="location.href='{% url "index" %}'">
-            Quản lý danh sách các công việc cần làm
-        </h1>
-    </div>
-    <div>
-        {% block content %}
-        This content will be replaced by different html code for each page.
-        {% endblock %}
-    </div>
+    <header>
+        <h1><a href="{% url 'index' %}">Quản lý danh sách các công việc cần làm</a></h1>
+        {% if user.is_authenticated %}
+        <nav>
+            <span>Xin chào, <b>{{ user.username }}</b></span>
+            {% if user.is_staff %}<a href="{% url 'index-user' %}">Thành viên</a>{% endif %}
+            <form method="post" action="{% url 'logout' %}" style="display: inline">
+                {% csrf_token %}
+                <button type="submit">Đăng xuất</button>
+            </form>
+        </nav>
+        {% endif %}
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+    </main>
 </body>
 
 </html>

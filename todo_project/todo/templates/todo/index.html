@@ -1,44 +1,13 @@
-<!-- todo_list/todo_app/templates/todo_app/index.html -->
-
 {% extends "base.html" %}
-{% block content %}
-<!--index.html-->
-{% if object_list %}
-    <div
-        role="button"
-        onclick="location.href=
-        '{% url "logout" %}'">
-        {{ todo.title }}
-        Đăng xuất {{ todo.due_date | date:"l, F j" }}
-    </div>
-<h3>Thêm danh sách công việc</h3>
-    <div
-        role="button"
-        onclick="location.href='{% url "list-add" %}'">
-        {{ todo.title }}
-        Thêm danh sách mới {{ todo.due_date | date:"l, F j" }}
-    </div>
 
-{% endif %}
+{% block content %}
+<h3>Danh sách công việc của bạn</h3>
 <ul>
     {% for todolist in object_list %}
-    <li>
-        <div
-            role="button"
-            onclick="location.href='{% url "list" todolist.id %}'">
-            {{ todolist.title }}
-        </div>
-    </li>
+    <li><a href="{% url 'list' todolist.id %}">{{ todolist.title }}</a></li>
     {% empty %}
-    <h5> Bạn không có công việc cần làm
-        <div
-            role="button"
-            onclick="location.href='{% url "list-add" %}'">
-            {{ todo.title }}
-            Thêm danh sách {{ todo.due_date | date:"l, F j" }}
-        </div>
-    </h5>
+    <p>Bạn chưa có danh sách công việc nào.</p>
     {% endfor %}
 </ul>
-
+<p><a class="button" href="{% url 'list-add' %}">Thêm danh sách mới</a></p>
 {% endblock %}

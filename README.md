@@ -2,21 +2,23 @@
 
 [![Tests](https://github.com/ngohuy04022000/django-todo-jwt-api/actions/workflows/tests.yml/badge.svg)](https://github.com/ngohuy04022000/django-todo-jwt-api/actions/workflows/tests.yml)
 
-A task management (to-do) web application built with **Django 4**, **Django REST Framework**, and **JWT authentication** (SimpleJWT), using **MySQL** as the database.
+A task management (to-do) application built with **Django 5.2 LTS**, offering both a server-rendered web UI and a **REST API** secured with **JWT authentication** (SimpleJWT), backed by **MySQL**.
 
 ## Features
 
-- User sign-up / sign-in / sign-out; all pages require login (the user list is admin-only)
-- Create and delete to-do lists
-- Add, update, and delete tasks (description, due date, status)
-- Access token / refresh token issued via JWT (`/get-token/`, `/refresh-token/`)
-- API tested with Postman (screenshots in the [`postman/`](postman) folder)
+- User sign-up (with Django password validation), sign-in and sign-out
+- Every user has their own private to-do lists; other users' data is never visible (404)
+- Create and delete lists; add, update, complete and delete tasks (description, due date, status)
+- REST API for lists and tasks under `/api/`, authenticated with JWT access/refresh tokens
+- Admin-only member list; Django admin for lists and tasks
+- Automated tests (web views, access control, API) run in GitHub Actions on SQLite and MySQL 8
+- UI screenshots in the [`postman/`](postman) folder
 
 ## Tech stack
 
 | Layer      | Technology                                   |
 |------------|----------------------------------------------|
-| Backend    | Python, Django 4.0, Django REST Framework    |
+| Backend    | Python 3.10+, Django 5.2, Django REST Framework |
 | Auth       | JWT (djangorestframework-simplejwt)          |
 | Database   | MySQL                                        |
 | Frontend   | Django Templates, HTML/CSS                   |
@@ -26,7 +28,7 @@ A task management (to-do) web application built with **Django 4**, **Django REST
 ```
 todo_project/
 ├── config/                  # Django configuration (settings, urls, wsgi)
-├── todo/                    # Main app: models, views, serializers, templates
+├── todo/                    # Main app: models, views, forms, REST API, templates, tests
 ├── manage.py
 └── requirements.txt
 postman/                     # API test screenshots
@@ -55,6 +57,10 @@ postman/                     # API test screenshots
    ```
 4. Open: http://127.0.0.1:8000/signin/
 
+To use the admin pages (`/admin/` and the member list at `/users/`), create an admin account with `python manage.py createsuperuser`.
+
+> Upgrading an existing database: `migrate` assigns lists created before per-user ownership to the oldest superuser (or the oldest user), and converts task IDs to auto-increment numbers.
+
 ## Running tests
 
 ```bash
@@ -64,17 +70,42 @@ DB_ENGINE=sqlite python manage.py test
 
 Setting `DB_ENGINE=sqlite` lets the tests run without a MySQL server. GitHub Actions runs the suite on every push against both SQLite and MySQL 8.
 
-## Main endpoints
+## Web pages
 
-| Method | URL                                   | Description            |
-|--------|---------------------------------------|------------------------|
-| GET/POST | `/signup/`                          | Sign up                |
-| GET/POST | `/signin/`                          | Sign in                |
-| GET    | `/signout/`                           | Sign out               |
-| GET    | `/`                                   | List of to-do lists    |
-| POST   | `/list/add/`                          | Create a list          |
-| POST   | `/list/<id>/item/add/`                | Add a task             |
-| POST   | `/list/<id>/item/<pk>/`               | Update a task          |
-| POST   | `/list/<id>/item/<pk>/delete/`        | Delete a task          |
-| POST   | `/get-token/`                         | Obtain a JWT token     |
-| POST   | `/refresh-token/`                     | Refresh a JWT token    |
+| URL                                 | Description                      |
+|-------------------------------------|----------------------------------|
+| `/signup/`                          | Sign up                          |
+| `/signin/`                          | Sign in                          |
+| `/signout/` (POST)                  | Sign out                         |
+| `/`                                 | Your to-do lists                 |
+| `/list/add/`                        | Create a list                    |
+| `/list/<id>/`                       | Tasks in a list                  |
+| `/list/<id>/delete/`                | Delete a list                    |
+| `/list/<id>/item/add/`              | Add a task                       |
+| `/list/<id>/item/<item_id>/`        | Edit a task                      |
+| `/list/<id>/item/<item_id>/delete/` | Delete a task                    |
+| `/users/`                           | Member list (staff only)         |
+
+## REST API
+
+Obtain a token, then send it as `Authorization: Bearer <access>`:
+
+```bash
+curl -X POST http://127.0.0.1:8000/get-token/ \
+     -H "Content-Type: application/json" \
+     -d '{"username": "alice", "password": "your_password"}'
+# -> {"refresh": "...", "access": "..."}
+
+curl http://127.0.0.1:8000/api/lists/ -H "Authorization: Bearer <access>"
+```
+
+| Method                  | URL                   | Description                                         |
+|-------------------------|-----------------------|-----------------------------------------------------|
+| POST                    | `/get-token/`         | Obtain access + refresh tokens                      |
+| POST                    | `/refresh-token/`     | Get a new access token from a refresh token         |
+| GET, POST               | `/api/lists/`         | List / create your to-do lists                      |
+| GET, PUT, PATCH, DELETE | `/api/lists/<id>/`    | Read / update / delete a list                       |
+| GET, POST               | `/api/items/`         | List / create tasks (filters: `?list=<id>`, `?status=true\|false`) |
+| GET, PUT, PATCH, DELETE | `/api/items/<id>/`    | Read / update / delete a task                       |
+
+Access tokens are valid for 15 minutes and refresh tokens for 1 day. List responses are paginated (20 per page).
