@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Todo
+from .models import ToDoItem
 
 class LoginSerializer(serializers.Serializer):
     token = serializers.CharField(max_length=256)
@@ -13,12 +13,14 @@ class LoginSerializer(serializers.Serializer):
 
 class TodoSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Todo
-        fields = [  "Id",
-                    "Task",
-                    "Description",
-                    "UserId" , 
-                    "CompletionDate",
-                    "Status",
-                    "CreationDate",
-                    "Modificationdate"]
+        model = ToDoItem
+        fields = [
+            "id",
+            "task",
+            "description",
+            "due_date",
+            "status",
+            "created_date",
+            "modification_date",
+            "todo_list",
+        ]

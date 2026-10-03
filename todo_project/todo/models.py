@@ -1,6 +1,3 @@
-import email
-from pyexpat import model
-from unicodedata import name
 from django.utils import timezone
 
 from django.db import models
@@ -8,6 +5,9 @@ from django.urls import reverse
 
 def date_time(x):
     return timezone.now() + timezone.timedelta(days=x)
+
+def default_due_date():
+    return date_time(7)
 
 class UserList(models.Model):
     id = models.CharField(primary_key=True, max_length=5)
@@ -36,11 +36,10 @@ class ToDoItem(models.Model):
     id = models.CharField(primary_key=True, max_length=5)
     task = models.CharField(max_length=30)
     description = models.TextField(null=True, blank=True)
-    user_id = models.CharField
-    due_date = models.DateTimeField(default=date_time(7))
+    due_date = models.DateTimeField(default=default_due_date)
     status = models.BooleanField(auto_created=True)
-    created_date = models.DateTimeField(default=date_time(0))
-    modification_date = models.DateTimeField(default=date_time(0))
+    created_date = models.DateTimeField(default=timezone.now)
+    modification_date = models.DateTimeField(default=timezone.now)
     todo_list = models.ForeignKey(ToDoList, on_delete=models.CASCADE)
 
     def get_absolute_url(self):
@@ -49,7 +48,7 @@ class ToDoItem(models.Model):
         )
 
     def __str__(self):
-        return f"{self.title}: due {self.due_date}"
+        return f"{self.task}: due {self.due_date}"
 
     class Meta:
         ordering = ["due_date"]

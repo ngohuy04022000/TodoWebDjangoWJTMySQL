@@ -1,8 +1,6 @@
-from enum import auto
 from django import forms
 import re
 from django.contrib.auth.models import User
-from .models import UserList
 
 class RegistrationForm(forms.Form):
     username = forms.CharField(label='Tài khoản', max_length=30)

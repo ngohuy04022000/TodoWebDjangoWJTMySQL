@@ -7,7 +7,7 @@ from django.views.generic import (
     DeleteView,
 )
 
-from .models import ToDoItem, ToDoList, UserList
+from .models import ToDoItem, ToDoList
 from django.contrib.auth.models import User
 
 from .signform import RegistrationForm

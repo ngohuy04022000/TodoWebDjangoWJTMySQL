@@ -1,4 +1,3 @@
-from telnetlib import AUTHENTICATION
 from django.urls import path
 from todo import views
 from django.contrib.auth import views as auth_views

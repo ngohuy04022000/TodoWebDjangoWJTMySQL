@@ -22,8 +22,8 @@ A task management (to-do) web application built with **Django 4**, **Django REST
 ## Project structure
 
 ```
-TodoWebDjangoWJTMySQL/
-├── TodoWebDjangoWJTMySQL/   # Django configuration (settings, urls, wsgi)
+todo_project/
+├── config/                  # Django configuration (settings, urls, wsgi)
 ├── todo/                    # Main app: models, views, serializers, templates
 ├── manage.py
 └── requirements.txt
@@ -34,7 +34,7 @@ postman/                     # API test screenshots
 
 1. Install dependencies:
    ```bash
-   cd TodoWebDjangoWJTMySQL
+   cd todo_project
    pip install -r requirements.txt
    ```
 2. Create a MySQL database (e.g. `todo_app`), then set the connection environment variables:
@@ -45,9 +45,9 @@ postman/                     # API test screenshots
    export DB_HOST=127.0.0.1
    export DB_PORT=3306
    ```
+   Optional variables: `DJANGO_SECRET_KEY`, `DJANGO_DEBUG` (`True`/`False`), `DJANGO_ALLOWED_HOSTS` (comma-separated).
 3. Initialize the database and start the server:
    ```bash
-   python manage.py makemigrations
    python manage.py migrate
    python manage.py runserver
    ```
