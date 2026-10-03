@@ -55,7 +55,8 @@ class AuthViewTests(TestCase):
             },
         )
         self.assertRedirects(response, "/")
-        self.assertTrue(User.objects.filter(username="alice").exists())
+        user = User.objects.get(username="alice")
+        self.assertEqual(int(self.client.session["_auth_user_id"]), user.id)
 
     def test_signup_rejects_mismatched_passwords(self):
         response = self.client.post(
@@ -117,9 +118,44 @@ class JWTTests(TestCase):
         self.assertEqual(response.status_code, 401)
 
 
+class AccessControlTests(TestCase):
+    def setUp(self):
+        self.todo_list = ToDoList.objects.create(title="Work")
+
+    def test_anonymous_user_is_redirected_to_signin(self):
+        urls = [
+            reverse("index"),
+            reverse("index-user"),
+            reverse("list", args=[self.todo_list.id]),
+            reverse("list-add"),
+            reverse("list-delete", args=[self.todo_list.id]),
+            reverse("item-add", args=[self.todo_list.id]),
+        ]
+        for url in urls:
+            with self.subTest(url=url):
+                response = self.client.get(url)
+                self.assertRedirects(response, f"{reverse('login')}?next={url}")
+
+    def test_anonymous_user_cannot_create_list(self):
+        self.client.post(reverse("list-add"), {"title": "Home"})
+        self.assertFalse(ToDoList.objects.filter(title="Home").exists())
+
+    def test_user_page_is_staff_only(self):
+        User.objects.create_user(username="alice", password="S3cure-pass")
+        self.client.login(username="alice", password="S3cure-pass")
+        self.assertEqual(self.client.get(reverse("index-user")).status_code, 403)
+
+        User.objects.create_user(username="admin", password="S3cure-pass", is_staff=True)
+        self.client.login(username="admin", password="S3cure-pass")
+        response = self.client.get(reverse("index-user"))
+        self.assertEqual(response.status_code, 200)
+
+
 class TodoCrudTests(TestCase):
     def setUp(self):
         self.todo_list = ToDoList.objects.create(title="Work")
+        User.objects.create_user(username="alice", password="S3cure-pass")
+        self.client.login(username="alice", password="S3cure-pass")
 
     def test_index_lists_todo_lists(self):
         response = self.client.get(reverse("index"))

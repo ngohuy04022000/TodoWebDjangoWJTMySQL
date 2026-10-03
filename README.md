@@ -6,7 +6,7 @@ A task management (to-do) web application built with **Django 4**, **Django REST
 
 ## Features
 
-- User sign-up / sign-in / sign-out
+- User sign-up / sign-in / sign-out; all pages require login (the user list is admin-only)
 - Create and delete to-do lists
 - Add, update, and delete tasks (description, due date, status)
 - Access token / refresh token issued via JWT (`/get-token/`, `/refresh-token/`)

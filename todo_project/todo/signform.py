@@ -27,5 +27,5 @@ class RegistrationForm(forms.Form):
         raise forms.ValidationError("Tài khoản đã tồn tại")
 
     def save(self):
-        User.objects.create_user(username=self.cleaned_data['username'], email=self.cleaned_data['email'], password=self.cleaned_data['password1'])
+        return User.objects.create_user(username=self.cleaned_data['username'], email=self.cleaned_data['email'], password=self.cleaned_data['password1'])
         # UserList.objects.create(id = , name = self.cleaned_data['username'])

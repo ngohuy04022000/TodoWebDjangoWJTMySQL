@@ -1,3 +1,5 @@
+from django.contrib.auth import login
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse, reverse_lazy
 
 from django.views.generic import (
@@ -19,21 +21,25 @@ def Register(request):
     if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            login(request, user)
             return HttpResponseRedirect('/')
     return render(request, 'pages/register.html', {'form': form})
 
 # ToDoItem: id, task, description, user_id, modification_date, status, created_date, due_date, todo_list
 
-class ListUserView(ListView):
+class ListUserView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     model = User
     template_name = "todo/index_user.html"
 
-class ListListView(ListView):
+    def test_func(self):
+        return self.request.user.is_staff
+
+class ListListView(LoginRequiredMixin, ListView):
     model = ToDoList
     template_name = "todo/index.html"
 
-class ItemListView(ListView):
+class ItemListView(LoginRequiredMixin, ListView):
     model = ToDoItem
     template_name = "todo/todo_list.html"
 
@@ -45,7 +51,7 @@ class ItemListView(ListView):
         context["todo_list"] = ToDoList.objects.get(id=self.kwargs["list_id"])
         return context
 
-class ListCreate(CreateView):
+class ListCreate(LoginRequiredMixin, CreateView):
     model = ToDoList
     fields = ["title"]
 
@@ -54,7 +60,7 @@ class ListCreate(CreateView):
         context["task"] = "Add a new list"
         return context
 
-class ItemCreate(CreateView):
+class ItemCreate(LoginRequiredMixin, CreateView):
     model = ToDoItem
     fields = [
         "todo_list",
@@ -82,7 +88,7 @@ class ItemCreate(CreateView):
     def get_success_url(self):
         return reverse("list", args=[self.object.todo_list_id])
 
-class ItemUpdate(UpdateView):
+class ItemUpdate(LoginRequiredMixin, UpdateView):
     model = ToDoItem
     fields = [
         "todo_list",
@@ -103,13 +109,13 @@ class ItemUpdate(UpdateView):
     def get_success_url(self):
         return reverse("list", args=[self.object.todo_list_id])
 
-class ListDelete(DeleteView):
+class ListDelete(LoginRequiredMixin, DeleteView):
     model = ToDoList
     # You have to use reverse_lazy() instead of reverse(),
     # as the urls are not loaded when the file is imported.
     success_url = reverse_lazy("index")
 
-class ItemDelete(DeleteView):
+class ItemDelete(LoginRequiredMixin, DeleteView):
     model = ToDoItem
 
     def get_success_url(self):
