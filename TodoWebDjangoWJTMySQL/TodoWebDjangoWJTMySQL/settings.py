@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 
+import os
 from datetime import timedelta
 from pathlib import Path
 
@@ -28,10 +29,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
    '*',
-   'http://python-entrancetest.herokuapp.com/',
-   'https://python-entrancetest.herokuapp.com/',
-   'python-entrancetest.herokuapp.com',
-   'python-entrancetest.herokuapp.com/',
    '127.0.0.1',
 ]
 
@@ -92,11 +89,11 @@ WSGI_APPLICATION = 'TodoWebDjangoWJTMySQL.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'EntranceTest',
-        'HOST': '127.0.0.1',
-        'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': '***REMOVED***',
+        'NAME': os.environ.get('DB_NAME', 'todo_app'),
+        'HOST': os.environ.get('DB_HOST', '127.0.0.1'),
+        'PORT': os.environ.get('DB_PORT', '3306'),
+        'USER': os.environ.get('DB_USER', 'root'),
+        'PASSWORD': os.environ.get('DB_PASSWORD', ''),
     }
 }
 
